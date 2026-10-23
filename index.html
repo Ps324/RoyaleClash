@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1" />
+  <meta name="theme-color" content="#171326" />
+  <meta name="description" content="Royal Arena — a fast real-time lane battle game for desktop browsers." />
+  <title>Royal Arena</title>
+  <style>
+    :root{color-scheme:dark;--bg:#0d0b15;--panel:#171326;--ink:#fff8e7;--muted:#b8adc9;--gold:#ffd86a;--purple:#9f65ff;--line:#372d4e}
+    *{box-sizing:border-box} html,body{margin:0;min-height:100%;background:radial-gradient(circle at 50% 0,#241a3b 0,#0d0b15 58%,#07060b 100%);color:var(--ink)}
+    body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;overflow-x:hidden}
+    .shell{width:min(100vw,1180px);margin:0 auto;padding:14px}
+    .topbar{display:flex;align-items:center;justify-content:space-between;gap:18px;margin:0 0 10px}
+    .brand strong{display:block;font-size:20px;letter-spacing:.02em}.brand span,.help{font-size:12px;color:var(--muted)}
+    .frame{position:relative;border:1px solid var(--line);border-radius:18px;overflow:hidden;background:#09070f;box-shadow:0 24px 70px rgba(0,0,0,.45)}
+    canvas{display:block;width:100%;height:auto;aspect-ratio:16/10.5;touch-action:none;cursor:crosshair}
+    .overlay{position:absolute;inset:0;display:grid;place-items:center;background:linear-gradient(rgba(7,5,12,.35),rgba(7,5,12,.8));backdrop-filter:blur(3px);z-index:4}
+    .overlay[hidden]{display:none}.card{width:min(520px,86%);padding:26px;border:1px solid rgba(255,255,255,.16);border-radius:20px;background:linear-gradient(180deg,rgba(35,27,56,.96),rgba(19,15,31,.96));box-shadow:0 24px 80px rgba(0,0,0,.5);text-align:center}
+    .card h1{margin:0 0 8px;font-size:42px;line-height:1}.card p{color:#d1c6df;line-height:1.5}.card button{appearance:none;border:0;border-radius:14px;padding:13px 20px;font-weight:800;font-size:16px;color:#20162e;background:linear-gradient(#ffe58d,#ffc846);cursor:pointer;box-shadow:0 5px 0 #a86a08}.card button:active{transform:translateY(3px);box-shadow:0 2px 0 #a86a08}
+    .chips{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin:14px 0 20px}.chip{padding:6px 9px;border-radius:999px;background:#281f3b;color:#d7cae7;font-size:12px}
+    footer{display:flex;justify-content:space-between;gap:16px;color:#9388a4;font-size:11px;margin-top:8px}
+    @media(max-width:720px){.shell{padding:6px}.help,footer span:last-child{display:none}.brand strong{font-size:16px}.card h1{font-size:34px}}
+  </style>
+</head>
+<body>
+<main class="shell">
+  <header class="topbar">
+    <div class="brand"><strong>Royal Arena</strong><span>Real-time lane battle · original browser game</span></div>
+    <div class="help">Mouse: select card → click arena · 1–4 cards · Esc cancel · R restart · M mute</div>
+  </header>
+  <section class="frame">
+    <canvas id="game" width="1280" height="840" aria-label="Royal Arena game"></canvas>
+    <div id="overlay" class="overlay">
+      <div class="card">
+        <h1>Royal Arena</h1>
+        <p>Destroy enemy towers before time runs out. Spend elixir, cycle your deck, defend both lanes and break the enemy Citadel.</p>
+        <div class="chips"><span class="chip">8-card deck</span><span class="chip">2 lanes</span><span class="chip">spells</span><span class="chip">enemy AI</span><span class="chip">overtime</span></div>
+        <button id="startBtn">Start Battle</button>
+      </div>
+    </div>
+  </section>
+  <footer><span>No external assets, no build step, no network requests.</span><span>Made for desktop/laptop browsers.</span></footer>
+</main>
+<script src="src/game.js"></script>
+</body>
+</html>
