@@ -387,35 +387,84 @@
 
   function drawArena(){
     ctx.clearRect(0,0,W,H);
-    const bg=ctx.createLinearGradient(0,0,0,ARENA_H);bg.addColorStop(0,'#3d5d50');bg.addColorStop(.49,'#4f7357');bg.addColorStop(.51,'#466b53');bg.addColorStop(1,'#385d49');ctx.fillStyle=bg;ctx.fillRect(0,0,W,ARENA_H);
-    for(let y=20;y<ARENA_H;y+=46) for(let x=((y/46)%2)*20;x<W;x+=55){ctx.fillStyle='rgba(255,255,255,.025)';ctx.fillRect(x,y,24,3)}
-    ctx.fillStyle='#2c79a6';ctx.fillRect(0,RIVER_Y-31,W,62);
-    ctx.fillStyle='rgba(255,255,255,.15)';for(let x=-30;x<W;x+=95){ctx.beginPath();ctx.arc(x,RIVER_Y-8,30,0,Math.PI);ctx.strokeStyle='rgba(220,250,255,.2)';ctx.lineWidth=3;ctx.stroke()}
-    for(const bx of BRIDGES){
-      ctx.fillStyle='#9c7950';ctx.fillRect(bx-55,RIVER_Y-39,110,78);ctx.strokeStyle='#5d422c';ctx.lineWidth=5;ctx.strokeRect(bx-55,RIVER_Y-39,110,78);
-      ctx.strokeStyle='rgba(255,255,255,.18)';ctx.lineWidth=2;for(let xx=bx-40;xx<bx+50;xx+=22){ctx.beginPath();ctx.moveTo(xx,RIVER_Y-34);ctx.lineTo(xx,RIVER_Y+34);ctx.stroke()}
+    const top=ctx.createLinearGradient(0,0,0,RIVER_Y-31);
+    top.addColorStop(0,'#694148');top.addColorStop(1,'#845159');
+    ctx.fillStyle=top;ctx.fillRect(0,0,W,RIVER_Y-31);
+    const bottom=ctx.createLinearGradient(0,RIVER_Y+31,0,ARENA_H);
+    bottom.addColorStop(0,'#3f6551');bottom.addColorStop(1,'#4c7a60');
+    ctx.fillStyle=bottom;ctx.fillRect(0,RIVER_Y+31,W,ARENA_H-RIVER_Y-31);
+    // Enemy ground: diagonal stone markings.
+    for(let y=22;y<RIVER_Y-31;y+=30){
+      ctx.strokeStyle='rgba(255,235,225,.09)';ctx.lineWidth=2;
+      for(let x=-40+(y%60);x<W+40;x+=44){
+        ctx.beginPath();ctx.moveTo(x,y+10);ctx.lineTo(x+18,y-8);ctx.stroke();
+      }
     }
-    ctx.fillStyle='rgba(87,150,221,.09)';ctx.fillRect(0,RIVER_Y+31,W,ARENA_H-RIVER_Y-31);
-    ctx.fillStyle='rgba(223,75,80,.075)';ctx.fillRect(0,0,W,RIVER_Y-31);
-    ctx.strokeStyle='rgba(255,255,255,.13)';ctx.setLineDash([8,10]);ctx.beginPath();ctx.moveTo(0,RIVER_Y);ctx.lineTo(W,RIVER_Y);ctx.stroke();ctx.setLineDash([]);
+    // Friendly ground: soft grassy dot texture.
+    for(let y=RIVER_Y+46;y<ARENA_H;y+=34){
+      for(let x=18+((Math.floor(y/34)%2)*18);x<W;x+=36){
+        ctx.fillStyle='rgba(233,255,235,.09)';
+        ctx.beginPath();ctx.arc(x,y,3,0,TAU);ctx.fill();
+      }
+    }
+    ctx.fillStyle='#2c79a6';ctx.fillRect(0,RIVER_Y-31,W,62);
+    for(let x=-30;x<W;x+=95){
+      ctx.beginPath();ctx.arc(x,RIVER_Y-8,30,0,Math.PI);
+      ctx.strokeStyle='rgba(220,250,255,.22)';ctx.lineWidth=3;ctx.stroke();
+    }
+    ctx.strokeStyle='rgba(255,255,255,.15)';ctx.lineWidth=1.5;
+    for(let x=-20;x<W+40;x+=52){
+      ctx.beginPath();ctx.moveTo(x,RIVER_Y+12);
+      ctx.quadraticCurveTo(x+18,RIVER_Y+2,x+36,RIVER_Y+12);ctx.stroke();
+    }
+    for(const bx of BRIDGES){
+      ctx.fillStyle='#a8865d';ctx.fillRect(bx-55,RIVER_Y-39,110,78);
+      ctx.strokeStyle='#5d422c';ctx.lineWidth=5;ctx.strokeRect(bx-55,RIVER_Y-39,110,78);
+      ctx.fillStyle='rgba(70,43,25,.18)';
+      for(let xx=bx-49;xx<bx+50;xx+=18)ctx.fillRect(xx,RIVER_Y-35,10,70);
+      ctx.strokeStyle='rgba(255,255,255,.18)';ctx.lineWidth=2;
+      for(let xx=bx-40;xx<bx+50;xx+=22){
+        ctx.beginPath();ctx.moveTo(xx,RIVER_Y-34);
+        ctx.lineTo(xx,RIVER_Y+34);ctx.stroke();
+      }
+    }
+    ctx.fillStyle='rgba(87,150,221,.08)';ctx.fillRect(0,RIVER_Y+31,W,ARENA_H-RIVER_Y-31);
+    ctx.fillStyle='rgba(223,75,80,.09)';ctx.fillRect(0,0,W,RIVER_Y-31);
+    ctx.strokeStyle='rgba(255,255,255,.13)';ctx.setLineDash([8,10]);
+    ctx.beginPath();ctx.moveTo(0,RIVER_Y);ctx.lineTo(W,RIVER_Y);ctx.stroke();ctx.setLineDash([]);
     ctx.fillStyle='#171326';ctx.fillRect(0,UI_Y,W,H-UI_Y);
     ctx.fillStyle='#251b36';ctx.fillRect(0,UI_Y,W,4);
   }
 
-  function teamColor(team){return team===TEAM.PLAYER?'#56a9ff':'#ff5f65';}
+  function teamColor(team){return team===TEAM.PLAYER?'#4da3ff':'#ff6268';}
+  function teamLight(team){return team===TEAM.PLAYER?'#dff1ff':'#ffe1e3';}
+  function teamDark(team){return team===TEAM.PLAYER?'#1f4f86':'#8d2934';}
 
   function drawTowers(){
     for(const t of game.towers){
       if(t.dead){
-        ctx.fillStyle='rgba(30,22,18,.45)';ctx.beginPath();ctx.ellipse(t.x,t.y+12,t.radius+14,15,0,0,TAU);ctx.fill();continue;
+        ctx.fillStyle='rgba(30,22,18,.45)';ctx.beginPath();
+        ctx.ellipse(t.x,t.y+12,t.radius+14,15,0,0,TAU);ctx.fill();continue;
       }
-      ctx.save(); ctx.translate(t.x,t.y);
-      ctx.fillStyle='rgba(0,0,0,.22)';ctx.beginPath();ctx.ellipse(0,19,t.radius+12,13,0,0,TAU);ctx.fill();
-      ctx.fillStyle=t.flash>0?'#fff4dc':teamColor(t.team);ctx.strokeStyle='#24192e';ctx.lineWidth=5;
+      ctx.save();ctx.translate(t.x,t.y);
+      ctx.fillStyle='rgba(0,0,0,.22)';ctx.beginPath();
+      ctx.ellipse(0,19,t.radius+12,13,0,0,TAU);ctx.fill();
+      ctx.fillStyle=t.flash>0?'#fff4dc':teamColor(t.team);
+      ctx.strokeStyle=teamDark(t.team);ctx.lineWidth=5;
       if(t.type==='citadel'){
-        roundRect(-34,-31,68,62,12);ctx.fill();ctx.stroke();ctx.fillStyle='#ffe38b';ctx.fillRect(-20,-39,40,13);ctx.fillStyle='#2b1f3a';ctx.beginPath();ctx.arc(0,-3,13,0,TAU);ctx.fill();
+        roundRect(-34,-31,68,62,12);ctx.fill();ctx.stroke();
+        ctx.fillStyle=teamLight(t.team);ctx.fillRect(-20,-39,40,13);
+        ctx.fillStyle='rgba(255,255,255,.18)';ctx.fillRect(-28,-22,56,10);
+        ctx.fillStyle='#2b1f3a';ctx.beginPath();ctx.arc(0,-3,13,0,TAU);ctx.fill();
+        ctx.fillStyle=teamDark(t.team);ctx.beginPath();
+        ctx.moveTo(-10,14);ctx.lineTo(0,2);ctx.lineTo(10,14);ctx.closePath();ctx.fill();
       }else{
-        roundRect(-27,-27,54,54,10);ctx.fill();ctx.stroke();ctx.fillStyle='#ffe38b';ctx.fillRect(-14,-34,28,11);ctx.fillStyle='#2b1f3a';ctx.beginPath();ctx.arc(0,-3,9,0,TAU);ctx.fill();
+        roundRect(-27,-27,54,54,10);ctx.fill();ctx.stroke();
+        ctx.fillStyle=teamLight(t.team);ctx.fillRect(-14,-34,28,11);
+        ctx.fillStyle='rgba(255,255,255,.18)';ctx.fillRect(-20,-18,40,8);
+        ctx.fillStyle='#2b1f3a';ctx.beginPath();ctx.arc(0,-3,9,0,TAU);ctx.fill();
+        ctx.fillStyle=teamDark(t.team);ctx.beginPath();
+        ctx.moveTo(-8,12);ctx.lineTo(0,4);ctx.lineTo(8,12);ctx.closePath();ctx.fill();
       }
       ctx.restore();
       drawHealth(t.x,t.y-(t.type==='citadel'?52:44),t.hp/t.maxHp,t.type==='citadel'?76:62);
@@ -427,16 +476,52 @@
   function drawUnits(){
     const sorted=[...game.units].sort((a,b)=>a.y-b.y);
     for(const u of sorted){
-      ctx.save(); ctx.translate(u.x,u.y);
-      ctx.fillStyle='rgba(0,0,0,.24)';ctx.beginPath();ctx.ellipse(0,u.radius*.72,u.radius*1.05,u.radius*.45,0,0,TAU);ctx.fill();
-      ctx.fillStyle=u.flash>0?'#fff9e8':u.def.color;ctx.strokeStyle=u.team===TEAM.PLAYER?'#dff4ff':'#ffd7d9';ctx.lineWidth=3;
-      ctx.beginPath();ctx.arc(0,0,u.radius,0,TAU);ctx.fill();ctx.stroke();
-      ctx.fillStyle=teamColor(u.team);ctx.beginPath();ctx.arc(-u.radius*.36,-u.radius*.28,Math.max(3,u.radius*.22),0,TAU);ctx.fill();
-      ctx.fillStyle='#21192c';ctx.beginPath();ctx.arc(u.radius*.28,-u.radius*.2,Math.max(2,u.radius*.14),0,TAU);ctx.fill();
-      if(u.def.buildingsOnly){ctx.strokeStyle='#ffe38b';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(-u.radius*.55,u.radius*.1);ctx.lineTo(u.radius*.55,-u.radius*.45);ctx.stroke();}
+      ctx.save();ctx.translate(u.x,u.y);
+      ctx.fillStyle='rgba(0,0,0,.24)';ctx.beginPath();
+      ctx.ellipse(0,u.radius*.72,u.radius*1.05,u.radius*.45,0,0,TAU);ctx.fill();
+      // Thick team ring is distinct even when unit types have similar colors.
+      ctx.fillStyle=teamColor(u.team);ctx.beginPath();
+      ctx.arc(0,0,u.radius+4,0,TAU);ctx.fill();
+      ctx.fillStyle=u.flash>0?'#fff9e8':u.def.color;
+      ctx.strokeStyle=teamLight(u.team);ctx.lineWidth=3;
+      ctx.beginPath();ctx.arc(0,0,Math.max(5,u.radius-2),0,TAU);ctx.fill();ctx.stroke();
+      ctx.fillStyle='rgba(255,255,255,.18)';ctx.beginPath();
+      ctx.arc(-u.radius*.2,-u.radius*.28,Math.max(4,u.radius*.38),0,TAU);ctx.fill();
+      ctx.fillStyle='#21192c';ctx.beginPath();
+      ctx.arc(u.radius*.24,-u.radius*.16,Math.max(2,u.radius*.14),0,TAU);ctx.fill();
+      ctx.strokeStyle=teamDark(u.team);ctx.lineWidth=2.5;ctx.beginPath();
+      ctx.moveTo(-u.radius*.25,u.radius*.25);ctx.lineTo(u.radius*.28,u.radius*.25);ctx.stroke();
+      // Allies have an arrow marker; enemies have a square/diamond.
+      ctx.fillStyle=teamLight(u.team);
+      if(u.team===TEAM.PLAYER){
+        ctx.beginPath();ctx.moveTo(0,-u.radius*.9);
+        ctx.lineTo(u.radius*.35,-u.radius*.35);ctx.lineTo(0,u.radius*.15);
+        ctx.lineTo(-u.radius*.35,-u.radius*.35);ctx.closePath();ctx.fill();
+      }else{
+        ctx.save();ctx.translate(0,-u.radius*.42);ctx.rotate(Math.PI/4);
+        ctx.fillRect(-u.radius*.22,-u.radius*.22,u.radius*.44,u.radius*.44);
+        ctx.restore();
+      }
+      if(u.def.buildingsOnly){
+        ctx.strokeStyle='#ffe38b';ctx.lineWidth=3;ctx.beginPath();
+        ctx.moveTo(-u.radius*.55,u.radius*.1);
+        ctx.lineTo(u.radius*.55,-u.radius*.45);ctx.stroke();
+      }
+      if(u.def.projectile){
+        ctx.fillStyle='#fff5c1';ctx.beginPath();
+        ctx.arc(u.radius*.42,u.radius*.28,Math.max(2,u.radius*.16),0,TAU);ctx.fill();
+      }
+      if(u.def.id==='sprites'){
+        ctx.fillStyle='rgba(255,255,255,.75)';
+        ctx.fillRect(-u.radius*.8,-u.radius*.15,u.radius*.28,2);
+        ctx.fillRect(u.radius*.5,-u.radius*.15,u.radius*.28,2);
+      }
       ctx.restore();
       drawHealth(u.x,u.y-u.radius-12,u.hp/u.maxHp,Math.max(28,u.radius*2.2),4);
-      if(u.stun>0){ctx.strokeStyle='#d6a8ff';ctx.lineWidth=2;ctx.beginPath();ctx.arc(u.x,u.y-u.radius-7,u.radius*.65,Math.PI,TAU);ctx.stroke();}
+      if(u.stun>0){
+        ctx.strokeStyle='#d6a8ff';ctx.lineWidth=2;ctx.beginPath();
+        ctx.arc(u.x,u.y-u.radius-7,u.radius*.65,Math.PI,TAU);ctx.stroke();
+      }
     }
   }
 
